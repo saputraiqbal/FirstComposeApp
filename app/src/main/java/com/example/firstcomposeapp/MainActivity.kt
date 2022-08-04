@@ -27,15 +27,15 @@ class MainActivity : ComponentActivity() {
                     "This is my first",
                     "Composable App!"
                 )
-                Surface(color = MaterialTheme.colors.background) {
-                    Scaffold(
-                        topBar = {
-                            TopAppBar(title = {
-                                Text(text = "First Compose App")
-                            })
-                        },
-                        modifier = Modifier.padding(16.dp)
-                    ) {
+                Scaffold(topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "First Compose App")
+                                },
+                        modifier = Modifier.height(72.dp))
+                }) {
+                    Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(24.dp)) {
                         LazyColumn {
                             itemsIndexed(items = itemList) { _, item ->
                                 ComposeItemList(text = item)
