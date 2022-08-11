@@ -6,8 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.example.firstcomposeapp.ui.theme.*
 
@@ -24,33 +24,35 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            var customBackground: Color by remember {
+                mutableStateOf(Purple500)
+            }
+            val itemList = listOf(
+                Pair("Teal", Teal200),
+                Pair("Fluorescent Purple", Purple200),
+                Pair("Bluish Purple", Purple700)
+            )
+
             FirstComposeAppTheme(
                 darkTheme = true
             ) {
-                // A surface container using the 'background' color from the theme
-                var customBackground: Color by remember {
-                    mutableStateOf(Purple500)
-                }
-                val itemList = listOf(
-                    Pair("Teal", Teal200),
-                    Pair("Fluorescent Purple", Purple200),
-                    Pair("Bluish Purple", Purple700)
-                )
-
                 Scaffold(
-                    topBar = { TopAppBar(
-                        title = { Text("First Compose App") },
-                        modifier = Modifier.height(72.dp)) },
+                    topBar = { MainAppBar() },
                     backgroundColor = customBackground,
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp),
                     ) {
-                    LazyColumn(
-                        modifier = Modifier.padding(24.dp)
-                    ) {
-                        itemsIndexed(items = itemList) { _, item ->
-                            ComposeItemList(data = item) {
-                                customBackground = item.second
+                        LazyColumn {
+                            items(itemList) { item ->
+                                ComposeItemList(data = item) {
+                                    customBackground = item.second
+                                }
                             }
                         }
+                        Spacer(modifier = Modifier.height(24.dp))
+                        MainButton()
                     }
                 }
             }
@@ -58,29 +60,66 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Preview
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun PreviewApp() {
+    FirstComposeAppTheme(
+        darkTheme = true
+    ) {
+        Scaffold(
+            topBar = { MainAppBar() },
+            backgroundColor = Teal200,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                LazyColumn(
+                ) {
+                    item {
+                        ComposeItemList(data = Pair("Example", Teal200)) {  }
+                    }
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+                MainButton()
+            }
+        }
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    ComposeItemList(data = Pair("Hello", Teal200)) {    }
+fun MainAppBar() {
+    TopAppBar (
+       title = { Text(text = "First Compose App") },
+       modifier = Modifier.height(72.dp),
+    )
 }
 
 @Composable
 fun ComposeItemList(data: Pair<String, Color>, onClick: () -> Unit) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        elevation = 8.dp,
+    Card(
+        shape = MaterialTheme.shapes.medium,
+        elevation = 5.dp,
+        backgroundColor = MaterialTheme.colors.background,
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
             .padding(8.dp)
-            .clickable { onClick.invoke() }) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = data.first)
-        }
+            .wrapContentHeight()
+            .clickable { onClick.invoke() }
+    ) {
+        Text(
+            text = data.first,
+            modifier = Modifier.padding(8.dp)
+        )
+    }
+}
+
+@Composable
+fun MainButton() {
+    Button(
+        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.onBackground),
+        onClick = {  }
+    ) {
+        Text(text = "About Me")
     }
 }
