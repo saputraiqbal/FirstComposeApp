@@ -3,6 +3,7 @@ package com.example.firstcomposeapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -14,31 +15,40 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.firstcomposeapp.ui.theme.FirstComposeAppTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import com.example.firstcomposeapp.ui.theme.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FirstComposeAppTheme {
+            FirstComposeAppTheme(
+                darkTheme = true
+            ) {
                 // A surface container using the 'background' color from the theme
+                var customBackground: Color by remember {
+                    mutableStateOf(Purple500)
+                }
                 val itemList = listOf(
-                    "Hello World",
-                    "This is my first",
-                    "Composable App!"
+                    Pair("Teal", Teal200),
+                    Pair("Fluorescent Purple", Purple200),
+                    Pair("Bluish Purple", Purple700)
                 )
-                Scaffold(topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = "First Compose App")
-                                },
-                        modifier = Modifier.height(72.dp))
-                }) {
-                    Surface(color = MaterialTheme.colors.background, modifier = Modifier.padding(24.dp)) {
-                        LazyColumn {
-                            itemsIndexed(items = itemList) { _, item ->
-                                ComposeItemList(text = item)
+
+                Scaffold(
+                    topBar = { TopAppBar(
+                        title = { Text("First Compose App") },
+                        modifier = Modifier.height(72.dp)) },
+                    backgroundColor = customBackground,
+                    ) {
+                    LazyColumn(
+                        modifier = Modifier.padding(24.dp)
+                    ) {
+                        itemsIndexed(items = itemList) { _, item ->
+                            ComposeItemList(data = item) {
+                                customBackground = item.second
                             }
                         }
                     }
@@ -56,20 +66,21 @@ fun Greeting(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    ComposeItemList(text = "Hello")
+    ComposeItemList(data = Pair("Hello", Teal200)) {    }
 }
 
 @Composable
-fun ComposeItemList(text: String) {
+fun ComposeItemList(data: Pair<String, Color>, onClick: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(8.dp),
         elevation = 8.dp,
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(8.dp)) {
+            .padding(8.dp)
+            .clickable { onClick.invoke() }) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = text)
+            Text(text = data.first)
         }
     }
 }
